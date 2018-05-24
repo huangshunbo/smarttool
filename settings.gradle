@@ -1,0 +1,2 @@
+include ':sample-simplewidgets', ':smarttool'
+rootProject.name = 'artifact'
