@@ -100,7 +100,7 @@ public class SmartDateTool {
 
     /**
      * 获取当前时间的字符串
-     *
+     * yyyy-MM-dd HH:mm:ss
      * @return
      */
     public static String getCurrentDate() {
@@ -119,7 +119,7 @@ public class SmartDateTool {
 
     /**
      * 日期时间格式化
-     *
+     * yyyy-MM-dd HH:mm:ss
      * @param date Date
      * @return
      */
@@ -315,7 +315,7 @@ public class SmartDateTool {
      */
     public static DateDifference getTwoDataDifference(Date date1, Date date2) {
         DateDifference difference = new DateDifference();
-        long millis = date1.getTime() - date2.getTime();
+        long millis = Math.abs(date1.getTime() - date2.getTime());
         difference.setMillisecond(millis);
         difference.setSecond(millis/SEC);
         difference.setMinute(millis/MIN);
@@ -468,271 +468,5 @@ public class SmartDateTool {
         return getWeek(new Date(millis));
     }
 
-    /**
-     * 获取星期
-     * <p>注意：周日的Index才是1，周六为7</p>
-     * <p>time格式为yyyy-MM-dd HH:mm:ss</p>
-     *
-     * @param time 时间字符串
-     * @return 1...5
-     */
-    public static int getWeekIndex(String time) {
-        return getWeekIndex(string2Date(time, DEFAULT_PATTERN));
-    }
-
-    /**
-     * 获取星期
-     * <p>注意：周日的Index才是1，周六为7</p>
-     * <p>time格式为pattern</p>
-     *
-     * @param time    时间字符串
-     * @param pattern 时间格式
-     * @return 1...7
-     */
-    public static int getWeekIndex(String time, String pattern) {
-        return getWeekIndex(string2Date(time, pattern));
-    }
-
-    /**
-     * 获取星期
-     * <p>注意：周日的Index才是1，周六为7</p>
-     *
-     * @param date Date类型时间
-     * @return 1...7
-     */
-    public static int getWeekIndex(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal.get(Calendar.DAY_OF_WEEK);
-    }
-
-    /**
-     * 获取星期
-     * <p>注意：周日的Index才是1，周六为7</p>
-     *
-     * @param millis 毫秒时间戳
-     * @return 1...7
-     */
-    public static int getWeekIndex(long millis) {
-        return getWeekIndex(millis2Date(millis));
-    }
-
-    /**
-     * 获取月份中的第几周
-     * <p>注意：国外周日才是新的一周的开始</p>
-     * <p>time格式为yyyy-MM-dd HH:mm:ss</p>
-     *
-     * @param time 时间字符串
-     * @return 1...5
-     */
-    public static int getWeekOfMonth(String time) {
-        return getWeekOfMonth(string2Date(time, DEFAULT_PATTERN));
-    }
-
-    /**
-     * 获取月份中的第几周
-     * <p>注意：国外周日才是新的一周的开始</p>
-     * <p>time格式为pattern</p>
-     *
-     * @param time    时间字符串
-     * @param pattern 时间格式
-     * @return 1...5
-     */
-    public static int getWeekOfMonth(String time, String pattern) {
-        return getWeekOfMonth(string2Date(time, pattern));
-    }
-
-    /**
-     * 获取月份中的第几周
-     * <p>注意：国外周日才是新的一周的开始</p>
-     *
-     * @param date Date类型时间
-     * @return 1...5
-     */
-    public static int getWeekOfMonth(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal.get(Calendar.WEEK_OF_MONTH);
-    }
-
-    /**
-     * 获取月份中的第几周
-     * <p>注意：国外周日才是新的一周的开始</p>
-     *
-     * @param millis 毫秒时间戳
-     * @return 1...5
-     */
-    public static int getWeekOfMonth(long millis) {
-        return getWeekOfMonth(millis2Date(millis));
-    }
-
-    /**
-     * 获取年份中的第几周
-     * <p>注意：国外周日才是新的一周的开始</p>
-     * <p>time格式为yyyy-MM-dd HH:mm:ss</p>
-     *
-     * @param time 时间字符串
-     * @return 1...54
-     */
-    public static int getWeekOfYear(String time) {
-        return getWeekOfYear(string2Date(time, DEFAULT_PATTERN));
-    }
-
-    /**
-     * 获取年份中的第几周
-     * <p>注意：国外周日才是新的一周的开始</p>
-     * <p>time格式为pattern</p>
-     *
-     * @param time    时间字符串
-     * @param pattern 时间格式
-     * @return 1...54
-     */
-    public static int getWeekOfYear(String time, String pattern) {
-        return getWeekOfYear(string2Date(time, pattern));
-    }
-
-    /**
-     * 获取年份中的第几周
-     * <p>注意：国外周日才是新的一周的开始</p>
-     *
-     * @param date Date类型时间
-     * @return 1...54
-     */
-    public static int getWeekOfYear(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return cal.get(Calendar.WEEK_OF_YEAR);
-    }
-
-    /**
-     * 获取年份中的第几周
-     * <p>注意：国外周日才是新的一周的开始</p>
-     *
-     * @param millis 毫秒时间戳
-     * @return 1...54
-     */
-    public static int getWeekOfYear(long millis) {
-        return getWeekOfYear(millis2Date(millis));
-    }
-
-    private static final String[] CHINESE_ZODIAC = {"猴", "鸡", "狗", "猪", "鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊"};
-
-    /**
-     * 获取生肖
-     * <p>time格式为yyyy-MM-dd HH:mm:ss</p>
-     *
-     * @param time 时间字符串
-     * @return 生肖
-     */
-    public static String getChineseZodiac(String time) {
-        return getChineseZodiac(string2Date(time, DEFAULT_PATTERN));
-    }
-
-    /**
-     * 获取生肖
-     * <p>time格式为pattern</p>
-     *
-     * @param time    时间字符串
-     * @param pattern 时间格式
-     * @return 生肖
-     */
-    public static String getChineseZodiac(String time, String pattern) {
-        return getChineseZodiac(string2Date(time, pattern));
-    }
-
-    /**
-     * 获取生肖
-     *
-     * @param date Date类型时间
-     * @return 生肖
-     */
-    public static String getChineseZodiac(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        return CHINESE_ZODIAC[cal.get(Calendar.YEAR) % 12];
-    }
-
-    /**
-     * 获取生肖
-     *
-     * @param millis 毫秒时间戳
-     * @return 生肖
-     */
-    public static String getChineseZodiac(long millis) {
-        return getChineseZodiac(millis2Date(millis));
-    }
-
-    /**
-     * 获取生肖
-     *
-     * @param year 年
-     * @return 生肖
-     */
-    public static String getChineseZodiac(int year) {
-        return CHINESE_ZODIAC[year % 12];
-    }
-
-    private static final String[] ZODIAC = {"水瓶座", "双鱼座", "白羊座", "金牛座", "双子座", "巨蟹座", "狮子座", "处女座", "天秤座", "天蝎座", "射手座", "魔羯座"};
-    private static final int[] ZODIAC_FLAGS = {20, 19, 21, 21, 21, 22, 23, 23, 23, 24, 23, 22};
-
-    /**
-     * 获取星座
-     * <p>time格式为yyyy-MM-dd HH:mm:ss</p>
-     *
-     * @param time 时间字符串
-     * @return 生肖
-     */
-    public static String getZodiac(String time) {
-        return getZodiac(string2Date(time, DEFAULT_PATTERN));
-    }
-
-    /**
-     * 获取星座
-     * <p>time格式为pattern</p>
-     *
-     * @param time    时间字符串
-     * @param pattern 时间格式
-     * @return 生肖
-     */
-    public static String getZodiac(String time, String pattern) {
-        return getZodiac(string2Date(time, pattern));
-    }
-
-    /**
-     * 获取星座
-     *
-     * @param date Date类型时间
-     * @return 星座
-     */
-    public static String getZodiac(Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        return getZodiac(month, day);
-    }
-
-    /**
-     * 获取星座
-     *
-     * @param millis 毫秒时间戳
-     * @return 星座
-     */
-    public static String getZodiac(long millis) {
-        return getZodiac(millis2Date(millis));
-    }
-
-    /**
-     * 获取星座
-     *
-     * @param month 月
-     * @param day   日
-     * @return 星座
-     */
-    public static String getZodiac(int month, int day) {
-        return ZODIAC[day >= ZODIAC_FLAGS[month - 1]
-                ? month - 1
-                : (month + 10) % 12];
-    }
 
 }

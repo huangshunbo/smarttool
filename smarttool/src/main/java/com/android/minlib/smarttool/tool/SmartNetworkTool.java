@@ -29,12 +29,6 @@ public class SmartNetworkTool {
         throw new UnsupportedOperationException("u can't instantiate me...");
     }
 
-    private static Context context;
-
-    public static void init(Application application){
-        context = application;
-    }
-
     public enum NetworkType {
         NETWORK_WIFI,
         NETWORK_4G,
@@ -48,7 +42,7 @@ public class SmartNetworkTool {
      * 打开网络设置界面
      * <p>3.0以下打开设置界面</p>
      */
-    public static void openWirelessSettings() {
+    public static void openWirelessSettings(Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -65,22 +59,11 @@ public class SmartNetworkTool {
      *
      * @return NetworkInfo
      */
-    private static NetworkInfo getActiveNetworkInfo() {
+    private static NetworkInfo getActiveNetworkInfo(Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
         return ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-    }
-
-    /**
-     * 判断网络是否连接
-     * <p>需添加权限 {@code <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>}</p>
-     *
-     * @return {@code true}: 是<br>{@code false}: 否
-     */
-    public static boolean isConnected() {
-        NetworkInfo info = getActiveNetworkInfo();
-        return info != null && info.isConnected();
     }
 
     /**
@@ -89,8 +72,8 @@ public class SmartNetworkTool {
      *
      * @return {@code true}: 可用<br>{@code false}: 不可用
      */
-    public static boolean isAvailable() {
-        NetworkInfo info = getActiveNetworkInfo();
+    private static boolean isAvailable(Context context) {
+        NetworkInfo info = getActiveNetworkInfo(context);
         return info != null && info.isAvailable();
     }
 
@@ -111,47 +94,6 @@ public class SmartNetworkTool {
         }
         return false;
     }
-    /**
-     * 判断移动数据是否打开
-     *
-     * @return {@code true}: 是<br>{@code false}: 否
-     */
-    public static boolean getDataEnabled() {
-        if(context == null){
-            throw new IllegalArgumentException("please call init first");
-        }
-        try {
-            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            Method getMobileDataEnabledMethod = tm.getClass().getDeclaredMethod("getDataEnabled");
-            if (null != getMobileDataEnabledMethod) {
-                return (boolean) getMobileDataEnabledMethod.invoke(tm);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * 打开或关闭移动数据(仅限系统应用)
-     * <p>需系统应用 需添加权限{@code <uses-permission android:name="android.permission.MODIFY_PHONE_STATE"/>}</p>
-     *
-     * @param enabled {@code true}: 打开<br>{@code false}: 关闭
-     */
-    public static void setDataEnabled(boolean enabled) {
-        if(context == null){
-            throw new IllegalArgumentException("please call init first");
-        }
-        try {
-            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            Method setMobileDataEnabledMethod = tm.getClass().getDeclaredMethod("setDataEnabled", boolean.class);
-            if (null != setMobileDataEnabledMethod) {
-                setMobileDataEnabledMethod.invoke(tm, enabled);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 判断网络是否是4G
@@ -159,8 +101,8 @@ public class SmartNetworkTool {
      *
      * @return {@code true}: 是<br>{@code false}: 否
      */
-    public static boolean is4G() {
-        NetworkInfo info = getActiveNetworkInfo();
+    public static boolean is4G(Context context) {
+        NetworkInfo info = getActiveNetworkInfo(context);
         return info != null && info.isAvailable() && info.getSubtype() == TelephonyManager.NETWORK_TYPE_LTE;
     }
 
@@ -170,7 +112,7 @@ public class SmartNetworkTool {
      *
      * @return {@code true}: 是<br>{@code false}: 否
      */
-    public static boolean getWifiEnabled() {
+    private static boolean getWifiEnabled(Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -184,7 +126,7 @@ public class SmartNetworkTool {
      *
      * @param enabled {@code true}: 打开<br>{@code false}: 关闭
      */
-    public static void setWifiEnabled(boolean enabled) {
+    public static void setWifiEnabled(boolean enabled,Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -201,30 +143,14 @@ public class SmartNetworkTool {
     }
 
     /**
-     * 判断wifi是否连接状态
-     * <p>需添加权限 {@code <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>}</p>
-     *
-     * @return {@code true}: 连接<br>{@code false}: 未连接
-     */
-    public static boolean isWifiConnected() {
-        if(context == null){
-            throw new IllegalArgumentException("please call init first");
-        }
-        ConnectivityManager cm = (ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm != null && cm.getActiveNetworkInfo() != null
-                && cm.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_WIFI;
-    }
-
-    /**
      * 判断wifi数据是否可用
      * <p>需添加权限 {@code <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>}</p>
      * <p>需添加权限 {@code <uses-permission android:name="android.permission.INTERNET"/>}</p>
      *
      * @return {@code true}: 是<br>{@code false}: 否
      */
-    public static boolean isWifiAvailable() {
-        return getWifiEnabled() && isAvailable();
+    public static boolean isWifiAvailable(Context context) {
+        return getWifiEnabled(context) && isAvailable(context);
     }
 
     /**
@@ -233,7 +159,7 @@ public class SmartNetworkTool {
      *
      * @return 运营商名称
      */
-    public static String getNetworkOperatorName() {
+    public static String getNetworkOperatorName(Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -259,9 +185,9 @@ public class SmartNetworkTool {
      * <li>{@link SmartNetworkTool.NetworkType#NETWORK_NO     } </li>
      * </ul>
      */
-    public static NetworkType getNetworkType() {
+    public static NetworkType getNetworkType(Context context) {
         NetworkType netType = NetworkType.NETWORK_NO;
-        NetworkInfo info = getActiveNetworkInfo();
+        NetworkInfo info = getActiveNetworkInfo(context);
         if (info != null && info.isAvailable()) {
 
             if (info.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -344,36 +270,6 @@ public class SmartNetworkTool {
                 }
             }
         } catch (SocketException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * 获取域名ip地址
-     * <p>需添加权限 {@code <uses-permission android:name="android.permission.INTERNET"/>}</p>
-     *
-     * @param domain 域名
-     * @return ip地址
-     */
-    public static String getDomainAddress(final String domain) {
-        try {
-            ExecutorService exec = Executors.newCachedThreadPool();
-            Future<String> fs = exec.submit(new Callable<String>() {
-                @Override
-                public String call() throws Exception {
-                    InetAddress inetAddress;
-                    try {
-                        inetAddress = InetAddress.getByName(domain);
-                        return inetAddress.getHostAddress();
-                    } catch (UnknownHostException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            });
-            return fs.get();
-        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return null;

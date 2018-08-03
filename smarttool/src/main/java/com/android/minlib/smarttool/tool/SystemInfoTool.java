@@ -39,7 +39,6 @@ import static com.android.minlib.smarttool.tool.SmartNetworkTool.NetworkType.NET
 
 public class SystemInfoTool {
 
-    private static Context context;
     //操作系统
     private static String systemVersion;
     //手机品牌
@@ -50,17 +49,8 @@ public class SystemInfoTool {
     private static String imei;
     //App版本
     private static String appVersion;
-    //网络类型
-    private static String netType;
-    //IP
-    private static String IPAddress;
     //UUID
     private static UUID uuid;
-
-    public static void init(Application application){
-        context = application;
-        SmartNetworkTool.init(application);
-    }
 
     public static String getSystemVersion() {
         return systemVersion = android.os.Build.VERSION.RELEASE;
@@ -74,8 +64,8 @@ public class SystemInfoTool {
         return phoneModel = android.os.Build.MODEL;
     }
 
-    public static String getImei() {
-        String[] imeis = getIMEIS();
+    public static String getImei(Context context) {
+        String[] imeis = getIMEIS(context);
         if(imeis == null || imeis.length <= 0){
             return "-1";
         }
@@ -86,10 +76,10 @@ public class SystemInfoTool {
         }
         return imei;
     }
-    private static String[] getIMEIS() {
+    private static String[] getIMEIS(Context context) {
         String[] imeis = new String[2];
-        imeis[0] = getOperatorBySlot( "getDeviceId", 0);
-        imeis[1] = getOperatorBySlot( "getDeviceId", 1);
+        imeis[0] = getOperatorBySlot( "getDeviceId", 0,context);
+        imeis[1] = getOperatorBySlot( "getDeviceId", 1,context);
         return imeis;
     }
     /**
@@ -97,7 +87,7 @@ public class SystemInfoTool {
      * <br> Author:      zhongweijie
      * <br> Date:        2017/10/27 15:44
      */
-    public static String getOperatorBySlot(String predictedMethodName, int slotID) {
+    private static String getOperatorBySlot(String predictedMethodName, int slotID,Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -126,7 +116,7 @@ public class SystemInfoTool {
         return inumeric;
     }
 
-    public static String getAppVersion() {
+    public static String getAppVersion(Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -141,140 +131,7 @@ public class SystemInfoTool {
         return appVersion;
     }
 
-    public static String getNetType() {
-        if(context == null){
-            throw new IllegalArgumentException("please call init first");
-        }
-        SmartNetworkTool.NetworkType networkType = SmartNetworkTool.getNetworkType();
-        if(networkType == NETWORK_WIFI){
-            netType = "WIFI";
-        }else if(networkType == NETWORK_4G){
-            netType = "4g";
-        }else if(networkType == NETWORK_3G){
-            netType = "3G";
-        }else if(networkType == NETWORK_2G){
-            netType = "2G";
-        }else if(networkType == NETWORK_UNKNOWN){
-            netType = "UNKNOW";
-        }else if(networkType == NETWORK_NO){
-            netType = "NO NETWORK";
-        }
-        return netType;
-    }
-
-    public static String getIPAddress() {
-        IPAddress = getPhoneIpAddress();
-        return IPAddress;
-    }
-
-    /**
-     * <br> Description: 获取本机的ip地址（3中方法都包括）
-     * <br> Author:      zhongweijie
-     * <br> Date:        2017/10/25 9:24
-     */
-    public static String getPhoneIpAddress() {
-        String ip = null;
-        try {
-            ip = getWifiIp();
-            if (ip == null) {
-                ip = getMoveNetIp();
-                if (ip == null) {
-                    ip = getLocalIp();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ip;
-    }
-
-    /**
-     * <br> Description:3G/4g网络IP
-     * <br> Author:      zhongweijie
-     * <br> Date:        2017/10/25 9:24
-     */
-    public static String getMoveNetIp() {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface
-                    .getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf
-                        .getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()
-                            && inetAddress instanceof Inet4Address) {
-                        // if (!inetAddress.isLoopbackAddress() && inetAddress
-                        // instanceof Inet6Address) {
-                        return inetAddress.getHostAddress();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * <br> Description:wifi获取ip
-     * <br> Author:      zhongweijie
-     * <br> Date:        2017/10/25 9:22
-     */
-    public static String getWifiIp() {
-        if(context == null){
-            throw new IllegalArgumentException("please call init first");
-        }
-        try {
-            //获取wifi服务
-            WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            //判断wifi是否开启
-            if (!wifiManager.isWifiEnabled()) {
-                wifiManager.setWifiEnabled(true);
-            }
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            int ipAddress = wifiInfo.getIpAddress();
-            String ip = intToIp(ipAddress);
-            return ip;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    /**
-     * <br> Description: gps获取ip
-     * <br> Author:      zhongweijie
-     * <br> Date:        2017/10/25 9:18
-     */
-    public static String getLocalIp() {
-        String ip = "";
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) {
-                        ip = inetAddress.getHostAddress();
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return ip;
-    }
-    /**
-     * <br> Description: 格式化ip地址（192.168.11.1）
-     * <br> Author:      zhongweijie
-     * <br> Date:        2017/10/25 9:24
-     */
-    private static String intToIp(int i) {
-        return (i & 0xFF) + "." +
-                ((i >> 8) & 0xFF) + "." +
-                ((i >> 16) & 0xFF) + "." +
-                (i >> 24 & 0xFF);
-    }
-
-    public static UUID getUUID() {
+    public static UUID getUUID(Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -325,34 +182,15 @@ public class SystemInfoTool {
         return uuid;
     }
 
-    public static StringBuilder string() {
+    public static StringBuilder string(Context context) {
         StringBuilder buf = new StringBuilder();
         buf.append("操作系统:" + getSystemVersion() + "\n");
         buf.append("手机品牌:" + getPhoneBrand() + "\n");
         buf.append("手机型号:" + getPhoneModel() + "\n");
-        buf.append("手机唯一标识码:" + getImei() + "\n");
-        buf.append("App版本:" + getAppVersion() + "\n");
-        buf.append("当前网络类型:" + getNetType() + "\n");
-        buf.append("IP地址:" + getIPAddress());
+        buf.append("手机唯一标识码:" + getImei(context) + "\n");
+        buf.append("App版本:" + getAppVersion(context) + "\n");
+        buf.append("UUID " + getUUID(context) + "\n");
         return buf;
-    }
-
-    /**
-     * 读取application 节点  meta-data 信息
-     */
-    public static String readMetaDataFromApplication(String key) {
-        if(context == null){
-            throw new IllegalArgumentException("please call init first");
-        }
-        try {
-            ApplicationInfo appInfo = context.getPackageManager()
-                    .getApplicationInfo(context.getPackageName(),
-                            PackageManager.GET_META_DATA);
-            return appInfo.metaData.getString(key);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     /**
@@ -360,7 +198,7 @@ public class SystemInfoTool {
      *
      * @param packageName 包名
      */
-    public static void startApp(String packageName) {
+    public static void startApp(String packageName,Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -372,7 +210,7 @@ public class SystemInfoTool {
      * @param packageName App包名
      * @return
      */
-    public static boolean isInstallApp(String packageName) {
+    public static boolean isInstallApp(String packageName,Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -390,7 +228,7 @@ public class SystemInfoTool {
      *
      * @param file apk文件路径
      */
-    public static void installApk(File file) {
+    public static void installApk(File file,Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -401,34 +239,12 @@ public class SystemInfoTool {
                 "application/vnd.android.package-archive");
         context.startActivity(intent);
     }
-    /**
-     * 用来判断服务是否运行.
-     *
-     * @param className 判断的服务名字 "com.xxx.xx..XXXService"
-     * @return true 在运行 false 不在运行
-     */
-    public static boolean isServiceRunning(String className) {
-        if(context == null){
-            throw new IllegalArgumentException("please call init first");
-        }
-        boolean isRunning = false;
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningServiceInfo> servicesList = activityManager.getRunningServices(Integer.MAX_VALUE);
-        Iterator<ActivityManager.RunningServiceInfo> l = servicesList.iterator();
-        while (l.hasNext()) {
-            ActivityManager.RunningServiceInfo si = (ActivityManager.RunningServiceInfo) l.next();
-            if (className.equals(si.service.getClassName())) {
-                isRunning = true;
-            }
-        }
-        return isRunning;
-    }
 
     /**
      * 获取PackageInfo
      * @return PackageInfo
      */
-    public static PackageInfo getPackageInfo() {
+    public static PackageInfo getPackageInfo(Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }
@@ -448,7 +264,7 @@ public class SystemInfoTool {
      * @param pkgName 包名
      * @return 返回应用的签名
      */
-    public static String getSign(String pkgName) {
+    public static String getSign(String pkgName,Context context) {
         if(context == null){
             throw new IllegalArgumentException("please call init first");
         }

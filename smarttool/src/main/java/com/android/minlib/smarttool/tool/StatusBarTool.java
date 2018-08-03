@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.Window;
@@ -20,26 +21,15 @@ public class StatusBarTool {
     private  StatusBarTool() {
     }
     /**
-     * 隐藏状态栏
-     * <p>也就是设置全屏，一定要在setContentView之前调用，否则报错</p>
-     * <p>此方法Activity可以继承AppCompatActivity</p>
-     * <p>启动的时候状态栏会显示一下再隐藏，比如QQ的欢迎界面</p>
-     * <p>在配置文件中Activity加属性android:theme="@android:style/Theme.NoTitleBar.Fullscreen"</p>
-     * <p>如加了以上配置Activity不能继承AppCompatActivity，会报错</p>
-     *
-     * @param activity activity
-     */
-    public static void hideStatusBar(Activity activity) {
-        noTitle(activity);
-        FLAG_FULLSCREEN(activity);
-    }
-    /**
      *<br> Description: 隐藏Title，需要在setContent之前调用
      *<br> Author:      huangshunbo
      *<br> Date:        2018/5/24 16:02
      */
     public static void noTitle(Activity activity) {
         activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        if(activity instanceof AppCompatActivity){
+            ((AppCompatActivity)activity).supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+        }
     }
 
     /**
@@ -88,30 +78,6 @@ public class StatusBarTool {
         }
         return 0;
     }
-    /**
-     * 显示通知栏
-     * <p>需添加权限 {@code <uses-permission android:name="android.permission.EXPAND_STATUS_BAR"/>}</p>
-     *
-     * @param context        上下文
-     * @param isSettingPanel {@code true}: 打开设置<br>{@code false}: 打开通知
-     */
-    public static void showNotificationBar(Context context, boolean isSettingPanel) {
-        String methodName = (Build.VERSION.SDK_INT <= 16) ? "expand"
-                : (isSettingPanel ? "expandSettingsPanel" : "expandNotificationsPanel");
-        invokePanels(context, methodName);
-    }
-
-    /**
-     * 隐藏通知栏
-     * <p>需添加权限 {@code <uses-permission android:name="android.permission.EXPAND_STATUS_BAR"/>}</p>
-     *
-     * @param context 上下文
-     */
-    public static void hideNotificationBar(Context context) {
-        String methodName = (Build.VERSION.SDK_INT <= 16) ? "collapse" : "collapsePanels";
-        invokePanels(context, methodName);
-    }
-
 
     /**
      * 设置状态栏黑色字体图标，

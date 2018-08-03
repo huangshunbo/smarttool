@@ -1,2 +1,2 @@
 include ':sample-simplewidgets', ':smarttool'
-rootProject.name = 'artifact'
+rootProject.name = 'smarttool'

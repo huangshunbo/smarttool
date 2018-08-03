@@ -37,26 +37,6 @@ public class ScreenTool {
     }
 
     /**
-     * 获得状态栏的高度
-     *
-     * @param context context
-     * @return 状态栏的高度
-     */
-    public static int getStatusHeight(Context context) {
-
-        int statusHeight = -1;
-        try {
-            Class<?> clazz = Class.forName("com.android.internal.R$dimen");
-            Object object = clazz.newInstance();
-            int height = Integer.parseInt(clazz.getField("status_bar_height").get(object).toString());
-            statusHeight = context.getResources().getDimensionPixelSize(height);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return statusHeight;
-    }
-
-    /**
      * 获取当前屏幕截图，包含状态栏
      *
      * @param activity activity
@@ -104,8 +84,8 @@ public class ScreenTool {
      * @param dpValue 虚拟像素
      * @return 像素
      */
-    public static int dp2px(float dpValue) {
-        return (int) (0.5f + dpValue * Resources.getSystem().getDisplayMetrics().density);
+    public static float dp2px(float dpValue) {
+        return (0.5f + dpValue * Resources.getSystem().getDisplayMetrics().density);
     }
 
     /**
@@ -113,7 +93,7 @@ public class ScreenTool {
      * @param pxValue 像素
      * @return 虚拟像素
      */
-    public static float px2dp(int pxValue) {
+    public static float px2dp(float pxValue) {
         return (pxValue / Resources.getSystem().getDisplayMetrics().density);
     }
 }

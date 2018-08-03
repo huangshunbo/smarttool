@@ -4,7 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/artifact.iml" filepath="$PROJECT_DIR$/artifact.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample-simplewidgets/sample-simplewidgets.iml" filepath="$PROJECT_DIR$/sample-simplewidgets/sample-simplewidgets.iml" />
-      <module fileurl="file://$PROJECT_DIR$/smarttool/smarttool.iml" filepath="$PROJECT_DIR$/smarttool/smarttool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/smarttool.iml" filepath="$PROJECT_DIR$/smarttool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/smarttool/smarttool-smarttool.iml" filepath="$PROJECT_DIR$/smarttool/smarttool-smarttool.iml" />
     </modules>
   </component>
 </project>
